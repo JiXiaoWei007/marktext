@@ -156,7 +156,7 @@ kbd {
   }
 
   .v-modal {
-    background: var(--maskColor);
+    background: var(--maskColor) !important;
   }
 
   body>*:first-child {
