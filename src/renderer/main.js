@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import axios from 'axios'
+import VueRouter from 'vue-router'
 import { crashReporter, ipcRenderer } from 'electron'
 import lang from 'element-ui/lib/locale/lang/en'
 import locale from 'element-ui/lib/locale'
-import App from './app'
 import store from './store'
 import './assets/symbolIcon'
 import {
@@ -18,15 +18,22 @@ import {
   ColorPicker,
   Col,
   Row,
-  Tree
+  Tree,
+  Autocomplete,
+  Switch
 } from 'element-ui'
 import services from './services'
+import routes from './router'
+import { addElementStyle } from '@/util/theme'
 
 import './assets/styles/index.css'
 import './assets/styles/printService.css'
 
 // Decode source map in production - must be registered first
 import sourceMapSupport from 'source-map-support'
+
+addElementStyle()
+
 sourceMapSupport.install({
   environment: 'node',
   handleUncaughtExceptions: false,
@@ -68,6 +75,10 @@ Vue.use(ColorPicker)
 Vue.use(Col)
 Vue.use(Row)
 Vue.use(Tree)
+Vue.use(Autocomplete)
+Vue.use(Switch)
+
+Vue.use(VueRouter)
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
@@ -77,9 +88,13 @@ services.forEach(s => {
   Vue.prototype['$' + s.name] = s[s.name]
 })
 
+const router = new VueRouter({
+  routes
+})
+
 /* eslint-disable no-new */
 new Vue({
-  components: { App },
   store,
-  template: '<App/>'
+  router,
+  template: '<router-view class="view"></router-view>'
 }).$mount('#app')

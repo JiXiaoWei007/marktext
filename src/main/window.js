@@ -4,7 +4,7 @@ import { getOsLineEndingName, loadMarkdownFile, getDefaultTextDirection } from '
 import appMenu from './menu'
 import Watcher from './watcher'
 import { isMarkdownFile, isDirectory, normalizeAndResolvePath, log } from './utils'
-import { TITLE_BAR_HEIGHT, defaultWinOptions, isLinux } from './config'
+import { TITLE_BAR_HEIGHT, defaultWinOptions, defaultPreferenceWinOptions, isLinux } from './config'
 import userPreference from './preference'
 import { newTab } from './actions/file'
 
@@ -167,9 +167,32 @@ class AppWindow {
       theme
     }
 
+    win.pageType = 'editor'
+
     const winURL = process.env.NODE_ENV === 'development'
       ? `http://localhost:9091`
       : `file://${__dirname}/index.html`
+
+    win.loadURL(winURL)
+    win.setSheetOffset(TITLE_BAR_HEIGHT)
+
+    return win
+  }
+
+  createPreferenceWindow (options = {}) {
+    const { windows } = this
+    const opts = Object.assign({}, defaultPreferenceWinOptions, options)
+    const win = new BrowserWindow(opts)
+    windows.set(win.id, { win })
+    win.setMenu(null)
+    win.once('ready-to-show', () => {
+      win.show()
+    })
+    win.pageType = 'preference'
+
+    const winURL = process.env.NODE_ENV === 'development'
+    ? `http://localhost:9091`
+    : `file://${__dirname}/index.html`
 
     win.loadURL(winURL)
     win.setSheetOffset(TITLE_BAR_HEIGHT)
