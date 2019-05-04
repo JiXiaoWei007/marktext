@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import fse from 'fs-extra'
+import electronLog from 'electron-log'
 import { app, Menu } from 'electron'
 import { EXTENSIONS } from '../config'
 
@@ -44,12 +45,9 @@ export const getMenuItemById = menuId => {
   return menus.getMenuItemById(menuId)
 }
 
-export const log = data => {
+export const log = (data, level='error') => {
   if (typeof data !== 'string') data = (data.stack || data).toString()
-  const LOG_DATA_PATH = path.join(getPath('userData'), 'error.log')
-  const LOG_TIME = new Date().toLocaleString()
-  ensureDir(getPath('userData'))
-  fs.appendFileSync(LOG_DATA_PATH, `\n${LOG_TIME}\n${data}\n`)
+  electronLog[level](data)
 }
 
 // returns true if the filename matches one of the markdown extensions
@@ -61,7 +59,25 @@ export const hasMarkdownExtension = filename => {
 export const hasSameKeys = (a, b) => {
   const aKeys = Object.keys(a).sort()
   const bKeys = Object.keys(b).sort()
-  return JSON.stringify(aKeys) === JSON.stringify(bKeys)
+  if (JSON.stringify(aKeys) !== JSON.stringify(bKeys)) {
+    return false
+  }
+  return Object.keys(a).every(key => {
+    if (
+      typeof a[key] === 'object' &&
+      !Array.isArray(a[key]) &&
+      a[key] !== null &&
+      typeof b[key] === 'object' &&
+      !Array.isArray(b[key]) &&
+      b[key] !== null
+    ) {
+      return hasSameKeys(a[key], b[key])
+    }
+    if (typeof a[key] !== typeof b[key]) {
+      return false
+    }
+    return true
+  })
 }
 
 /**

@@ -177,7 +177,7 @@
 
       this.$nextTick(() => {
         const win = remote.getCurrentWindow()
-        const style = win.stylePrefs || DEFAULT_STYLE
+        const style = Object.assign({}, DEFAULT_STYLE, win.stylePrefs)
         addStyles(style)
       })
     }

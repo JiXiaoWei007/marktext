@@ -6,15 +6,23 @@ import { isDirectory, isFile, ensureDir, getPath, log } from './utils'
 import { parseMenu, registerKeyHandler } from './shortcutHandler'
 
 class AppMenu {
-  constructor () {
+  constructor (mtApp) {
     const FILE_NAME = 'recently-used-documents.json'
 
+    this.mtApp = mtApp
     this.MAX_RECENTLY_USED_DOCUMENTS = 12
     this.RECENTS_PATH = path.join(getPath('userData'), FILE_NAME)
     this.isOsxOrWindows = /darwin|win32/.test(process.platform)
     this.isOsx = process.platform === 'darwin'
     this.activeWindowId = -1
     this.windowMenus = new Map()
+    this.listen()
+  }
+
+  listen () {
+    ipcMain.on('AGANI::add-recently-used-document', (e, pathname) => {
+      this.addRecentlyUsedDocument(pathname)
+    })
   }
 
   addRecentlyUsedDocument (filePath) {
@@ -219,10 +227,4 @@ const updateMenuItemSafe = (oldMenus, newMenus, id, defaultValue) => {
   newItem.checked = checked
 }
 
-const appMenu = new AppMenu()
-
-ipcMain.on('AGANI::add-recently-used-document', (e, pathname) => {
-  appMenu.addRecentlyUsedDocument(pathname)
-})
-
-export default appMenu
+export default AppMenu

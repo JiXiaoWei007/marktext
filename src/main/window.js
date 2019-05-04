@@ -1,7 +1,6 @@
 import { app, BrowserWindow, screen, ipcMain } from 'electron'
 import windowStateKeeper from 'electron-window-state'
 import { getOsLineEndingName, loadMarkdownFile, getDefaultTextDirection } from './utils/filesystem'
-import appMenu from './menu'
 import Watcher from './watcher'
 import { isMarkdownFile, isDirectory, normalizeAndResolvePath, log } from './utils'
 import { TITLE_BAR_HEIGHT, defaultWinOptions, defaultPreferenceWinOptions, isLinux } from './config'
@@ -9,7 +8,8 @@ import userPreference from './preference'
 import { newTab } from './actions/file'
 
 class AppWindow {
-  constructor () {
+  constructor (mtApp) {
+    this.mtApp = mtApp
     this.focusedWindowId = -1
     this.windows = new Map()
     this.watcher = new Watcher()
@@ -74,12 +74,14 @@ class AppWindow {
    * @param {*} [options] BrowserWindow options.
    */
   createWindow (pathname = null, markdown = '', options = {}) {
+    const { preference } = this.mtApp
     // Ensure path is normalized
     if (pathname) {
       pathname = normalizeAndResolvePath(pathname)
     }
 
     const { windows } = this
+    const { appMenu } = this.mtApp
     const mainWindowState = windowStateKeeper({
       defaultWidth: 1200,
       defaultHeight: 800
@@ -89,7 +91,7 @@ class AppWindow {
     const winOpt = Object.assign({ x, y, width, height }, defaultWinOptions, options)
 
     // Enable native or custom window
-    const { titleBarStyle } = userPreference.getAll()
+    const titleBarStyle = preference.getItem('preference.general.titleBarStyle')
     if (titleBarStyle === 'custom') {
       winOpt.titleBarStyle = ''
     } else if (titleBarStyle === 'native') {
@@ -159,10 +161,10 @@ class AppWindow {
     })
 
     // set renderer arguments
-    const { codeFontFamily, codeFontSize, theme } = userPreference.getAll()
+    const { codeFontSize } = preference.getItem('preference.editor')
+    const theme = preference.getItem('preference.theme')
     // wow, this can be accessesed in renderer process.
     win.stylePrefs = {
-      codeFontFamily,
       codeFontSize,
       theme
     }
@@ -201,6 +203,7 @@ class AppWindow {
   }
 
   openFile = async (win, filePath) => {
+    const { appMenu } = this.mtApp
     const data = await loadMarkdownFile(filePath)
     const {
       markdown,
@@ -239,6 +242,7 @@ class AppWindow {
   }
 
   newTab (win, filePath) {
+    const { appMenu } = this.mtApp
     this.watcher.watch(win, filePath, 'file')
     loadMarkdownFile(filePath).then(rawDocument => {
       appMenu.addRecentlyUsedDocument(filePath)
@@ -261,6 +265,7 @@ class AppWindow {
 
   forceClose (win) {
     if (!win) return
+    const { appMenu } = this.mtApp
     const { windows } = this
     if (windows.has(win.id)) {
       this.watcher.unWatchWin(win)
@@ -278,4 +283,4 @@ class AppWindow {
   }
 }
 
-export default new AppWindow()
+export default AppWindow

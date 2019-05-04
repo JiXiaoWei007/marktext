@@ -1,15 +1,19 @@
 import { app, systemPreferences } from 'electron'
-import appWindow from './window'
+import AppWindow from './window'
 import { isOsx } from './config'
 import { dockMenu } from './menus'
 import { isDirectory, isMarkdownFileOrLink, getMenuItemById, normalizeAndResolvePath } from './utils'
 import { watchers } from './utils/imagePathAutoComplement'
 import { selectTheme } from './actions/theme'
-import preference from './preference'
+import Preference from './preference'
+import AppMenu from './menu'
 
 class App {
   constructor () {
     this.openFilesCache = []
+    this.appMenu = new AppMenu(this)
+    this.appWindow = new AppWindow(this)
+    this.preference = new Preference(this)
   }
 
   init () {
