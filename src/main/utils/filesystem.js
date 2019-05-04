@@ -1,31 +1,24 @@
 import fse from 'fs-extra'
 import path from 'path'
 import { LINE_ENDING_REG, LF_LINE_ENDING_REG, CRLF_LINE_ENDING_REG, isWindows } from '../config'
-import userPreference from '../preference'
 
-export const getOsLineEndingName = () => {
-  const { endOfLine } = userPreference.getAll()
+export const getOsLineEndingName = (preference) => {
+  const endOfLine = preference.getItem('preference.editor.endOfLine')
   if (endOfLine === 'lf') {
     return 'lf'
   }
   return endOfLine === 'crlf' || isWindows ? 'crlf' : 'lf'
 }
 
-export const getDefaultTextDirection = () => {
-  const { textDirection } = userPreference.getAll()
-  return textDirection
-}
-
 const getLineEnding = lineEnding => {
   if (lineEnding === 'lf') {
     return '\n'
-  } else if (lineEnding === 'crlf') {
+  } else {
     return '\r\n'
   }
-  return getOsLineEndingName() === 'crlf' ? '\r\n' : '\n'
 }
 
-const convertLineEndings = (text, lineEnding) => {
+const convertLineEndings = (text, lineEnding = 'lf') => {
   return text.replace(LINE_ENDING_REG, getLineEnding(lineEnding))
 }
 
@@ -59,7 +52,7 @@ export const writeMarkdownFile = (pathname, content, options, win) => {
  * @param {String} The path to the markdown file.
  * @returns {IMarkdownDocumentRaw} Returns a raw markdown document.
  */
-export const loadMarkdownFile = async pathname => {
+export const loadMarkdownFile = async (pathname, preference) => {
   let markdown = await fse.readFile(path.resolve(pathname), 'utf-8')
   // Check UTF-8 BOM (EF BB BF) encoding
   const isUtf8BomEncoded = markdown.length >= 1 && markdown.charCodeAt(0) === 0xFEFF
@@ -72,7 +65,7 @@ export const loadMarkdownFile = async pathname => {
   const isCrlf = CRLF_LINE_ENDING_REG.test(markdown)
   const isMixedLineEndings = isLf && isCrlf
   const isUnknownEnding = !isLf && !isCrlf
-  let lineEnding = getOsLineEndingName()
+  let lineEnding = getOsLineEndingName(preference)
   if (isLf && !isCrlf) {
     lineEnding = 'lf'
   } else if (isCrlf && !isLf) {
@@ -89,7 +82,7 @@ export const loadMarkdownFile = async pathname => {
   const filename = path.basename(pathname)
 
   // TODO(refactor:renderer/editor): Remove this entry! This should be loaded separately if needed.
-  const textDirection = getDefaultTextDirection()
+  const textDirection = preference.getItem('preference.editor.textDirection')
 
   return {
     // document information

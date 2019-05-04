@@ -85,7 +85,8 @@ const unlinkDir = (win, pathname) => {
 }
 
 class Watcher {
-  constructor () {
+  constructor (mtApp) {
+    this.mtApp = mtApp
     this.watchers = {}
   }
   // return a unwatch function

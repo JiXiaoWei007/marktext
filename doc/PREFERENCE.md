@@ -23,8 +23,8 @@
 | autoPairBracket        | Boolean | true               | Automatically brackets when editing                                                                                                                                   |
 | autoPairMarkdownSyntax | Boolean | true               | Autocomplete markdown syntax                                                                                                                                          |
 | autoPairQuote          | Boolean | true               | Automatic completion of quotes                                                                                                                                        |
-| endOfLine              | String  | default            | The newline character used at the end of each line. The default value is default, which will be selected according to your system intelligence. `lr` `crlf` `default` |
-| textDirection          | String  | ltr                | The writing text direction, optional value: `ltr` or `rtl`                                                                                                            |
+| endOfLine              | String  | default            | The default line ending. The default value is default, which will be selected according to your system intelligence. `lr` `crlf` `default` |
+| textDirection          | String  | ltr                | The default writing text direction, optional value: `ltr` or `rtl`                                                                                                            |
 | codeFontSize           | Number  | 14                 | Font size on code Block, the range is 12 ~ 18                                                                                                                         |
 | codeFontFamily         | String  | `DejaVu Sans Mono` | Code font family                                                                                                                                                      |
 | hideQuickInsertHint    | Boolean | false              | Hide hint for quickly creating paragraphs                                                                                                                             |
@@ -38,7 +38,7 @@
 | bulletListMarker    | String  | `-`     | The marker used in bullet list, optional value: `-`, `*` `+`                                                                      |
 | orderListDelimiter  | String  | `.`     | The dilimiter used in order list, optional value: `.` `)`                                                                         |
 | preferHeadingStyle  | String  | `atx`   | The prefer heading style in Mark Text, optional value `atx` `setext`, [more info](https://spec.commonmark.org/0.29/#atx-headings) |
-| tabSize             | Number  | 4       | Replace the tab with 4 spaces                                                                                                     |
+| tabSize             | Number  | 4       | The number of spaces a tab is equal to                                                                                                     |
 | listIndentation     | String  | 1       | Select the indent of list, optional value `dfm`, `tab` or number 1~4                                                              |
 
 #### Theme

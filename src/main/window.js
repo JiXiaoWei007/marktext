@@ -1,6 +1,6 @@
 import { app, BrowserWindow, screen, ipcMain } from 'electron'
 import windowStateKeeper from 'electron-window-state'
-import { getOsLineEndingName, loadMarkdownFile, getDefaultTextDirection } from './utils/filesystem'
+import { getOsLineEndingName, loadMarkdownFile } from './utils/filesystem'
 import Watcher from './watcher'
 import { isMarkdownFile, isDirectory, normalizeAndResolvePath, log } from './utils'
 import { TITLE_BAR_HEIGHT, defaultWinOptions, defaultPreferenceWinOptions, isLinux } from './config'
@@ -11,7 +11,7 @@ class AppWindow {
     this.mtApp = mtApp
     this.focusedWindowId = -1
     this.windows = new Map()
-    this.watcher = new Watcher()
+    this.watcher = new Watcher(mtApp)
     this.listen()
   }
 
@@ -125,8 +125,8 @@ class AppWindow {
         this.openFolder(win, pathname)
         // open a window but do not open a file or directory
       } else {
-        const lineEnding = getOsLineEndingName()
-        const textDirection = getDefaultTextDirection()
+        const lineEnding = getOsLineEndingName(preference)
+        const textDirection = preference.getItem('preference.editor.textDirection')
         win.webContents.send('AGANI::open-blank-window', {
           lineEnding,
           markdown

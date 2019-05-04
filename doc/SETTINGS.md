@@ -1,4 +1,4 @@
-# Settings
+# Settings(Deprecated please PREFERENCE.md)
 
 ## Options
 
