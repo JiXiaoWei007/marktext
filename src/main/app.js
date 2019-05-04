@@ -1,7 +1,6 @@
 import { app, systemPreferences } from 'electron'
 import AppWindow from './window'
 import { isOsx } from './config'
-import { dockMenu } from './menus'
 import { isDirectory, isMarkdownFileOrLink, getMenuItemById, normalizeAndResolvePath } from './utils'
 import { watchers } from './utils/imagePathAutoComplement'
 import { selectTheme } from './actions/theme'
@@ -84,7 +83,7 @@ class App {
 
     // Set dock on macOS
     if (process.platform === 'darwin') {
-      app.dock.setMenu(dockMenu)
+      app.dock.setMenu(this.appMenu.menuTemplate.dockMenu)
 
       // Listen for system theme change and change Mark Text own `dark` and `light`.
       // In macOS 10.14 Mojave,  Apple introduced a new system-wide dark mode for

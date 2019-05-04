@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { app, ipcMain, Menu } from 'electron'
-import configureMenu from './menus'
+import MenuTemplate from './menus'
 import { isDirectory, isFile, ensureDir, getPath, log } from './utils'
 import { parseMenu, registerKeyHandler } from './shortcutHandler'
 
@@ -16,6 +16,7 @@ class AppMenu {
     this.isOsx = process.platform === 'darwin'
     this.activeWindowId = -1
     this.windowMenus = new Map()
+    this.menuTemplate = new MenuTemplate(mtApp)
     this.listen()
   }
 
@@ -140,7 +141,7 @@ class AppMenu {
       recentUsedDocuments = this.getRecentlyUsedDocuments()
     }
 
-    const menuTemplate = configureMenu(recentUsedDocuments)
+    const menuTemplate = this.menuTemplate.templates
     const menu = Menu.buildFromTemplate(menuTemplate)
 
     let shortcutMap = null

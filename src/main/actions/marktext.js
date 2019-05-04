@@ -1,7 +1,5 @@
 import { autoUpdater } from 'electron-updater'
 import { ipcMain } from 'electron'
-import appWindow from '../window'
-// import userPreference from '../preference'
 
 let updater
 let win
@@ -46,8 +44,8 @@ autoUpdater.on('update-downloaded', () => {
   setImmediate(() => autoUpdater.quitAndInstall())
 })
 
-export const userSetting = (menuItem, browserWindow) => {
-  appWindow.createPreferenceWindow()
+export const userSetting = (menuItem, browserWindow, mtApp) => {
+  mtApp.appWindow.createPreferenceWindow()
 }
 
 export const checkUpdates = (menuItem, browserWindow) => {

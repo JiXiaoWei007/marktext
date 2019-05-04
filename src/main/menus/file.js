@@ -2,12 +2,15 @@ import { app } from 'electron'
 import * as actions from '../actions/file'
 import { userSetting } from '../actions/marktext'
 import { showTabBar } from '../actions/view'
-import userPreference from '../preference'
 import keybindings from '../shortcutHandler'
 
-export default function (recentlyUsedFiles) {
-  const { autoSave } = userPreference.getAll()
+export default function (mtApp) {
+  const recentlyUsedFiles = mtApp.appMenu.getRecentlyUsedDocuments()
+  const autoSave = mtApp.preference.getItem('preference.general.autoSave')
   const notOsx = process.platform !== 'darwin'
+
+  actions.listen(mtApp)
+
   let fileMenu = {
     label: 'File',
     submenu: [{
@@ -21,7 +24,7 @@ export default function (recentlyUsedFiles) {
       label: 'New Window',
       accelerator: keybindings.getAccelerator('fileNewTab'),
       click (menuItem, browserWindow) {
-        actions.newFile()
+        actions.newFile(mtApp)
       }
     }, {
       type: 'separator'
@@ -29,13 +32,13 @@ export default function (recentlyUsedFiles) {
       label: 'Open File',
       accelerator: keybindings.getAccelerator('fileOpenFile'),
       click (menuItem, browserWindow) {
-        actions.openFile(browserWindow)
+        actions.openFile(browserWindow, mtApp)
       }
     }, {
       label: 'Open Folder',
       accelerator: keybindings.getAccelerator('fileOpenFolder'),
       click (menuItem, browserWindow) {
-        actions.openFolder(browserWindow)
+        actions.openFolder(browserWindow, mtApp)
       }
     }]
   }
@@ -50,7 +53,7 @@ export default function (recentlyUsedFiles) {
       recentlyUsedMenu.submenu.push({
         label: item,
         click (menuItem, browserWindow) {
-          actions.openFileOrFolder(browserWindow, menuItem.label)
+          actions.openFileOrFolder(browserWindow, menuItem.label, mtApp)
         }
       })
     }
@@ -62,7 +65,7 @@ export default function (recentlyUsedFiles) {
       label: 'Clear Recently Used',
       enabled: recentlyUsedFiles.length > 0,
       click (menuItem, browserWindow) {
-        actions.clearRecentlyUsed()
+        actions.clearRecentlyUsed(mtApp)
       }
     })
     fileMenu.submenu.push(recentlyUsedMenu)
@@ -104,7 +107,7 @@ export default function (recentlyUsedFiles) {
     type: 'checkbox',
     checked: autoSave,
     click (menuItem, browserWindow) {
-      actions.autoSave(menuItem, browserWindow)
+      actions.autoSave(menuItem, browserWindow, mtApp)
     }
   }, {
     type: 'separator'
@@ -156,7 +159,7 @@ export default function (recentlyUsedFiles) {
     accelerator: keybindings.getAccelerator('filePreferences'),
     visible: notOsx,
     click (menuItem, browserWindow) {
-      userSetting(menuItem, browserWindow)
+      userSetting(menuItem, browserWindow, mtApp)
     }
   }, {
     type: 'separator',

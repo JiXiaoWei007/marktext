@@ -4,7 +4,6 @@ import { getOsLineEndingName, loadMarkdownFile, getDefaultTextDirection } from '
 import Watcher from './watcher'
 import { isMarkdownFile, isDirectory, normalizeAndResolvePath, log } from './utils'
 import { TITLE_BAR_HEIGHT, defaultWinOptions, defaultPreferenceWinOptions, isLinux } from './config'
-import userPreference from './preference'
 import { newTab } from './actions/file'
 
 class AppWindow {
@@ -161,10 +160,11 @@ class AppWindow {
     })
 
     // set renderer arguments
-    const { codeFontSize } = preference.getItem('preference.editor')
+    const { codeFontSize, codeFontFamily } = preference.getItem('preference.editor')
     const theme = preference.getItem('preference.theme')
     // wow, this can be accessesed in renderer process.
     win.stylePrefs = {
+      codeFontFamily,
       codeFontSize,
       theme
     }
