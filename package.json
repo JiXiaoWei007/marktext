@@ -174,6 +174,7 @@
     "dompurify": "^1.0.10",
     "dragula": "^3.7.2",
     "electron-is-accelerator": "^0.1.2",
+    "electron-store": "^3.2.0",
     "electron-window-state": "^5.0.3",
     "element-resize-detector": "^1.2.0",
     "element-ui": "^2.8.2",
